@@ -14,5 +14,5 @@ export default function Filter({ filter }) {
   );
 }
 Filter.propTypes = {
-  filter: PropTypes.string.isRequired,
+  filter: PropTypes.func,
 };

@@ -1,18 +1,17 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
 import React from 'react';
 import { nanoid } from 'nanoid';
 import Form from './Form';
 import Filter from './Filter';
 import List from './ContactList';
+import { useEffect } from 'react';
 
-class Phonebook extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
-  addContact = (name, number, filter) => {
-    const findElement = this.state.contacts.find(e => {
+function Phonebook() {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
+  const addContact = (name, number, filter) => {
+    const findElement = contacts.find(e => {
       return e.name.toLowerCase().includes(name.toLowerCase());
     });
 
@@ -25,65 +24,52 @@ class Phonebook extends Component {
         number: number,
       };
 
-      this.setState(prevState => ({
-        contacts: [...prevState.contacts, newContact],
-        filter: prevState.filter,
-      }));
+      setContacts([...contacts, newContact]);
+      setFilter(filter);
     }
   };
-
-  componentDidMount() {
-    const lItem = localStorage.getItem('contact');
-    lItem
-      ? this.setState({
-          contacts: JSON.parse(lItem),
-        })
-      : this.setState({
-          contacts: [],
-        });
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.contacts.length !== this.state.contacts.length) {
-      localStorage.setItem('contact', JSON.stringify(this.state.contacts));
-    }
-  }
-  removeContacts = id => {
-    this.setState({
-      contacts: this.state.contacts.filter(e => {
+  const removeContacts = id => {
+    setContacts(
+      contacts.filter(e => {
         return e.id !== id;
-      }),
-    });
-  };
-
-  editFilter = value => {
-    this.setState({
-      filter: value,
-    });
-  };
-
-  render() {
-    return (
-      <div className="all-pos">
-        <ul className="flexator">
-          <li>
-            <form action="">
-              <h1>Phonebook</h1>
-              <Form addContact={this.addContact} />
-            </form>
-          </li>
-          <li>
-            <h1>Contacts</h1>
-            <Filter filter={this.editFilter} />
-            <List
-              contacts={this.state.contacts}
-              filter={this.state.filter}
-              removeContacts={this.removeContacts}
-            />
-          </li>
-        </ul>
-      </div>
+      })
     );
+  };
+
+  function editFilter(value) {
+    setFilter(value);
   }
+  useEffect(() => {
+    console.log(localStorage);
+    console.log(contacts);
+    localStorage.setItem('contact', JSON.stringify(contacts));
+  }, [contacts]);
+  useEffect(() => {
+    const lItem = localStorage.getItem('contact');
+    lItem ? setContacts(JSON.parse(lItem)) : setContacts([]);
+  }, []);
+
+  return (
+    <div className="all-pos">
+      <ul className="flexator">
+        <li>
+          <form action="">
+            <h1>Phonebook</h1>
+            <Form addContact={addContact} />
+          </form>
+        </li>
+        <li>
+          <h1>Contacts</h1>
+          <Filter filter={editFilter} />
+          <List
+            contacts={contacts}
+            filter={filter}
+            removeContacts={removeContacts}
+          />
+        </li>
+      </ul>
+    </div>
+  );
 }
 
 export default Phonebook;
