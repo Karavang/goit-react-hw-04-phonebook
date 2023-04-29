@@ -39,14 +39,16 @@ function Phonebook() {
   function editFilter(value) {
     setFilter(value);
   }
+
   useEffect(() => {
-    console.log(localStorage);
-    console.log(contacts);
-    localStorage.setItem('contact', JSON.stringify(contacts));
+    if (contacts.length !== 0) {
+      localStorage.setItem('contact', JSON.stringify(contacts));
+    }
   }, [contacts]);
   useEffect(() => {
-    const lItem = localStorage.getItem('contact');
-    lItem ? setContacts(JSON.parse(lItem)) : setContacts([]);
+    const lItem = JSON.parse(localStorage.getItem('contact'));
+    console.log(lItem);
+    lItem ? setContacts(lItem) : setContacts([]);
   }, []);
 
   return (
